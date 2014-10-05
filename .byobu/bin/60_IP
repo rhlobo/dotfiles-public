@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+IP_INTERNAL=$(~/.scripts/get_ip_internal)
+IP_EXTERNAL=$(~/.scripts/get_ip_external)
+
+echo "WLAN: $IP_EXTERNAL LAN: $IP_INTERNAL"

@@ -1,0 +1,40 @@
+[user]
+	name = rhlobo
+	email = rhlobo+github@gmail.com
+[credential]
+	helper = cache --timeout=18000
+[core]
+	autocrlf = input
+[alias]
+	co = checkout
+	st = status -sb
+	ct = commit
+	br = branch
+	rb = rebase
+	da = difftool -d
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	brm = branch --merged
+	df = diff --word-diff
+	ours = "!for i in $(git st --porcelain | grep -e \"^UU\" | sed -r \"s/\\S+\\s+//g\"); do git co --ours -- \"$i\"; done"
+	theirs = "!for i in $(git st --porcelain | grep -e \"^UU\" | sed -r \"s/\\S+\\s+//g\"); do git co --theirs -- \"$i\"; done"
+[color]
+	diff = always
+	ui = auto
+	status = auto
+	interactive = auto
+	branch = auto
+[diff]
+[merge]
+	conflictstyle = diff3
+	external = meld
+[color "status"]
+	added = green
+	modified = blue
+	changed = yellow
+	untracked = white
+[branch]
+	autosetuprebase = always
+[help]
+	autocorrect = 1
+[push]
+	default = simple
