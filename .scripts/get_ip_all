@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+IP_ETH0=$(~/.scripts/get_ip_internal eth0)
+IP_WLAN0=$(~/.scripts/get_ip_internal wlan0)
+IP_EXTERNAL=$(~/.scripts/get_ip_external)
+
+echo "eth0: $IP_ETH0"
+echo "wlan0: $IP_WLAN0"
+echo "external: $IP_EXTERNAL"
+

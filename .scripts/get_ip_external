@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+IP=$(curl ifconfig.me 2>/dev/null || echo 'Not connected')
+echo "${IP}"
+
