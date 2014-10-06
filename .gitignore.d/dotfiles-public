@@ -99,7 +99,6 @@
 /.rvm
 /.say
 /.scripts
-/.setup_trusty-x64.sh
 /.shell_extension
 /.shutter
 /.ssh
