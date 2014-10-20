@@ -273,6 +273,7 @@ myManageHook = manageDocks <+> composeAll
 
     --, resource  =? "mail.google.com"     --> viewShift    (myWorkspaces !! 2)
     --, resource  =? "desktop_window"      --> doIgnore
+    , className =? "guake"                  --> doFloat
     , resource  =? "kdesktop"               --> doIgnore
     , className =? "vlc"                    --> doIgnore
     , className =? "Vlc"                    --> doIgnore

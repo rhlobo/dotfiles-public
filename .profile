@@ -22,3 +22,5 @@ if [ -d "$HOME/bin" ] ; then
 fi
 
 PATH=$HOME/.rvm/bin:$PATH # Add RVM to PATH for scripting
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

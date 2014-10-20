@@ -119,3 +119,5 @@ set -o vi
 # Calling bash personal configurations
 [ -f ~/.shell_extension ] && . ~/.shell_extension
 
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

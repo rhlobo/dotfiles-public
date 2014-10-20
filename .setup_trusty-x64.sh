@@ -213,7 +213,12 @@ sudo apt-get install --yes --quiet python2.7 python2.7-dev python-setuptools bui
 sudo apt-get install --yes --quiet ipython ipython-notebook
 ipython profile create
 #### PYTHON VIRTUALENVWRAPPER
-sudo apt-get install --yes --quiet python-pip
+# sudo apt-get install --yes --quiet python-pip
+sudo apt-get purge --yes python-pip
+cd ~/tmp
+wget -O - https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+sudo python get-pip.py
+cd "${CURRDIR}"
 sudo apt-get install --yes --quiet virtualenvwrapper
 sudo pip install virtualenvwrapper
 #### R
@@ -278,9 +283,15 @@ curl -s https://get.docker.io/ubuntu/ | sudo sh
 #----- configs bellow taken from http://patg.net/containers,virtualization,docker/2014/06/09/docker-install/
 assure_in_file 'DOCKER_OPTS="--ip=0.0.0.0"' "/etc/defaults/docker"
 #assure_in_file 'DOCKER_OPTS="--host=tcp://0.0.0.0:4243”' "/etc/defaults/docker"
+#### DOCKER FIG
+#sudo bash -c 'curl -L https://github.com/docker/fig/releases/download/0.5.2/linux > /usr/local/bin/fig'
+#sudo chmod +x /usr/local/bin/fig
+sudo pip install -U fig
 #### GITHUB GIT WRAPPER
 sudo apt-get install --yes --quiet libyaml-dev
 curl http://hub.github.com/standalone -sLo ~/app/hub
+#mkdir -p ~/.zsh/completion
+#curl https://raw.githubusercontent.com/github/hub/master/etc/hub.zsh_completion -sLo ~/.zsh/completion/hub.zsh_completion
 chmod +x ~/app/hub
 #### GOOGLE COMMAND LINE TOOLS
 sudo apt-get install --yes --quiet googlecl
@@ -291,6 +302,13 @@ sudo easy_install http://closure-linter.googlecode.com/files/closure_linter-late
 CURRDIR=$(pwd) && cd "${HOME}/tmp" && curl http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz | tar xz
 cd jq-1.3
 ./configure && make && sudo make install
+cd "${CURRDIR}"
+#### NGROK - Expose localhost securely to the world
+CURRDIR=$(pwd)
+cd ~/app
+wget -O ngrok.zip https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?os=linux&arch=386&channel=stable
+unzip ngrok.zip
+rm ngrok.zip
 cd "${CURRDIR}"
 #### SYNTAX COLORING
 sudo apt-get install --yes --quiet source-highlight
@@ -759,7 +777,7 @@ cd "${CURRDIR}"
 
 
 ## Ubuntu as DLNA server (https://help.ubuntu.com/community/MiniDLNA)
-sudo apt-get install minidlna
+sudo apt-get install --yes --quiet minidlna
 sudo sh -c 'echo "#network_interface=wlan0" > /etc/minidlna.conf'
 sudo sh -c 'echo "media_dir=A,/data/2b-synched/music" >> /etc/minidlna.conf'
 sudo sh -c 'echo "media_dir=P,/data/2b-synched/photos" >> /etc/minidlna.conf'
@@ -788,3 +806,22 @@ sudo apt-get --quiet update && sudo apt-get install --yes --quiet wine
 winetricks d3dx9 droid winxp vcrun2008 corefonts
 cp -R .wine .wine-TEMPLATE
 
+
+### IRSSI & BITLBEE
+sudo apt-get install --yes --quiet irssi irssi-scripts
+
+
+### FINGERPRINT - not ready for production, patch is needed, pull request pending
+sudo apt-add-repository --yes ppa:fingerprint/fingerprint-gui && sudo apt-get --quiet update
+sudo apt-get install --yes --quiet libbsapi policykit-1-fingerprint-gui fingerprint-gui
+sudo apt-get install libperl-dev libgtk2.0-dev libusb-1.0-0-dev libnss3-dev
+sudo apt-get install libxv-dev
+wget https://github.com/ars3niy/fprint_vfs5011/archive/master.zip
+unzip ./master.zip
+cd ./fprint_vfs5011-master
+./autogen.sh
+./configure
+make
+sudo make install
+sudo apt-get install fprint-demo fprintd fprintd-doc libfprint0
+sudo fprint_demo

@@ -43,6 +43,7 @@ plugins=(autopep8 catimg command-not-found compleat docker gem git gitfast githu
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
+
 # Tab completion from both ends
 #setopt completeinword
 
@@ -155,3 +156,5 @@ zle -N zle-keymap-select
 ### ---
 # Calling bash personal configurations
 [ -f ~/.shell_extension ] && . ~/.shell_extension
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
