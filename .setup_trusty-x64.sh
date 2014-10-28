@@ -253,6 +253,10 @@ sudo apt-get install --yes --quiet golang
 #cd ~/app
 #wget -O - https://go.googlecode.com/files/go1.2.linux-386.tar.gz | tar xzf -
 #cd "${CURRDIR}"
+#### GO DEP 
+export GOPATH=${HOME}/app/go-tools
+mkdir -p $GOPATH
+go get github.com/tools/godep
 #### ORACLE JAVA JDK 8
 sudo apt-get purge --yes --quiet openjdk*
 sudo rm -f /var/lib/dpkg/info/oracle-java8-installer*
