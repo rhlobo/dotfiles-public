@@ -188,12 +188,23 @@ sudo add-apt-repository --yes ppa:marutter/rrutter
 sudo add-apt-repository --yes ppa:nvbn-rm/ppa
 #### JAVA (ORACLE)
 sudo add-apt-repository --yes ppa:webupd8team/java
+#### JAVA INTEGRATION WITH UNITY HUD
+sudo add-apt-repository --yes ppa:danjaredg/jayatana
 #### GOOGLE TALK PLUGIN
 sudo sh -c 'echo "deb http://dl.google.com/linux/talkplugin/deb/ stable main" >> /etc/apt/sources.list.d/google-talkplugin.list'
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+#### GRIVE-TOOLS
+sudo add-apt-repository --yes ppa:thefanclub/grive-tools
+#### LINRUNNER (BATTERY LIFE)
+sudo add-apt-repository --yes ppa:linrunner/tlp
 #### PIPELINE (WINE SILVERLIGHT) AND NETFLIX (review options vefore activating)
 # sudo apt-add-repository --yes ppa:pipelight/stable
-
+#### REMINDOR - ALARM NOTIFICATIONS
+sudo add-apt-repository --yes ppa:bhdouglass/indicator-remindor
+#### TOUCHPAD INDICATOR
+sudo add-apt-repository --yes ppa:atareao/atareao
+#### TRUECRYPT
+sudo add-apt-repository --yes ppa:stefansundin/truecrypt
 
 
 ## SOFTWARE LISTINGS
@@ -344,6 +355,16 @@ sudo apt-get install --yes --quiet nmap
 ### COMMAND LINE
 #### NETHACK
 sudo apt-get install --yes --quiet nethack-console
+#### BROGUE
+CURRDIR=$(pwd)
+cd ~/app
+$IS_X86 && {
+    wget -O - "https://sites.google.com/site/broguegame/brogue-1.7.4-linux-i386.tbz2?attredirects=0&d=1" | tar -jxvf -
+} || {
+    wget -O - "https://sites.google.com/site/broguegame/brogue-1.7.4-linux-amd64.tbz2?attredirects=0&d=1" | tar -jxvf -
+}
+ln -s ${HOME}/app/brogue-1.7.4 ${HOME}/app/brogue
+cd "${CURRDIR}"
 #### ZSH
 sudo apt-get install --yes --quiet zsh
 #### OH MY ZSH
@@ -469,6 +490,8 @@ wget -O markdown.zip "http://daringfireball.net/projects/downloads/Markdown_1.0.
     ln -s Markdown_1.0.1 markdown
 }
 cd "${CURRDIR}"
+#### OPENVPN
+sudo apt-get install --yes --quiet openvpn
 #### SSHUTTLE
 sudo apt-get install --yes --quiet sshuttle
 CURRDIR=$(pwd)
@@ -516,13 +539,9 @@ $IS_DESKTOP && {
     #### GLIPPER (CLIPBOARD HISTORY - Alt+V)
     sudo apt-get install --yes --quiet glipper
     #### JAVA INTEGRATION WITH UNITY HUD
-    sudo add-apt-repository --yes ppa:danjaredg/jayatana
-    sudo apt-get --quiet update
     sudo apt-get install --yes --quiet jayatana
     #### LINRUNNER (BATTERY LIFE)
-    sudo add-apt-repository --yes ppa:linrunner/tlp
-    sudo apt-get --quiet update
-    sudo apt-get --yes --quiet install tlp tlp-rdw
+    sudo apt-get install --yes --quiet tlp tlp-rdw
     sudo tlp start
     #### MAC CHANGER
     sudo apt-get install --yes --quiet macchanger-gtk
@@ -560,8 +579,6 @@ $IS_DESKTOP && {
     #### SHUTTER SCREENSHOT
     sudo apt-get install --yes --quiet shutter
     #### TOUCHPAD INDICATOR
-    sudo add-apt-repository --yes ppa:atareao/atareao
-    sudo apt-get --quiet update
     sudo apt-get install --yes --quiet touchpad-indicator
     #### UBUNTU NOTIFICATIONS
     sudo apt-get install --yes --quiet notify-osd
@@ -581,6 +598,9 @@ $IS_DESKTOP && {
     sudo dpkg -i dropbox.deb
     rm -f dropbox.deb
     cd "${CURRDIR}"
+    #### GRIVE-TOOLS (GOOGLE DRIVE)
+    sudo apt-get install --yes --quiet grive-tools
+    #grive
     #### EVERNOTE (EVERPAD)
     sudo apt-get install --yes --quiet everpad
     #### FREEMIND
@@ -612,8 +632,6 @@ $IS_DESKTOP && {
     #sudo apt-get install --yes --quiet rxvt-unicode-256color ncurses-term
     sudo apt-get install --yes --quiet rxvt-unicode
     #### REMINDOR - ALARM NOTIFICATIONS
-    sudo add-apt-repository --yes ppa:bhdouglass/indicator-remindor
-    sudo apt-get --quiet update
     sudo apt-get install --yes --quiet indicator-remindor
     #### SKYPE
     sudo apt-get install --yes --quiet skype
@@ -621,8 +639,6 @@ $IS_DESKTOP && {
     #### SUBTITLE EDITOR
     sudo apt-get install --yes --quiet subtitleeditor
     #### TRUECRYPT
-    sudo add-apt-repository --yes ppa:stefansundin/truecrypt
-    sudo apt-get --quiet update
     sudo apt-get install --yes --quiet truecrypt
     #### VIDEO CONVERSION
     sudo apt-get install --yes --quiet transmageddon
