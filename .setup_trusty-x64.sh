@@ -363,6 +363,7 @@ $IS_X86 && {
 } || {
     wget -O - "https://sites.google.com/site/broguegame/brogue-1.7.4-linux-amd64.tbz2?attredirects=0&d=1" | tar -jxvf -
 }
+rm -Rf ${HOME}/app/brogue
 ln -s ${HOME}/app/brogue-1.7.4 ${HOME}/app/brogue
 cd "${CURRDIR}"
 #### ZSH
