@@ -182,6 +182,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         ((ctrlAlt, xK_v),           spawn           "gvim"),
         ((ctrlAlt, xK_l),           spawn           "gnome-screensaver-command -l"),
         ((ctrlAlt, xK_t),           spawn           "/home/rhlobo/.scripts/system/touchpad_toogle.sh"),
+        ((ctrlAlt, xK_y),           spawn           "/home/rhlobo/app/brogue/bin/brogue"),
 
         ((ctrlAlt, xK_c),           spawn           "/home/rhlobo/.scripts/system/process_toogle.sh gnome-control-center"),
         ((ctrlAlt, xK_Return),      spawn           "/home/rhlobo/.scripts/system/gnome-panel_toogle.sh"),
@@ -275,8 +276,8 @@ myManageHook = manageDocks <+> composeAll
     --, resource  =? "desktop_window"      --> doIgnore
     , className =? "guake"                  --> doFloat
     , resource  =? "kdesktop"               --> doIgnore
-    , className =? "vlc"                    --> doIgnore
-    , className =? "Vlc"                    --> doIgnore
+    , className =? "vlc"                    --> doFullFloat
+    , className =? "Vlc"                    --> doFullFloat
     , isFullscreen                          --> doFullFloat
     ]
     where 

@@ -197,6 +197,8 @@ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-ke
 sudo add-apt-repository --yes ppa:thefanclub/grive-tools
 #### LINRUNNER (BATTERY LIFE)
 sudo add-apt-repository --yes ppa:linrunner/tlp
+#### NODE.JS & NPM
+sudo add-apt-repository --yes ppa:chris-lea/node.js
 #### PIPELINE (WINE SILVERLIGHT) AND NETFLIX (review options vefore activating)
 # sudo apt-add-repository --yes ppa:pipelight/stable
 #### REMINDOR - ALARM NOTIFICATIONS
@@ -259,15 +261,13 @@ git clone https://github.com/creationix/nvm.git ~/.nvm && {
 #    gvm install go1.1.1
 #    gvm use go1.1.1 --default
 #}
-sudo apt-get install --yes --quiet golang
 #CURRDIR=$(pwd)
 #cd ~/app
 #wget -O - https://go.googlecode.com/files/go1.2.linux-386.tar.gz | tar xzf -
 #cd "${CURRDIR}"
-#### GO DEP 
-export GOPATH=${HOME}/app/go-tools
-mkdir -p $GOPATH
-go get github.com/tools/godep
+sudo apt-get install --yes --quiet golang
+#### NODE.JS & NPM
+sudo apt-get install --yes --quiet nodejs
 #### ORACLE JAVA JDK 8
 sudo apt-get purge --yes --quiet openjdk*
 sudo rm -f /var/lib/dpkg/info/oracle-java8-installer*
@@ -279,6 +279,7 @@ sudo apt-get install --yes --quiet maven2
 #### JETTY
 sudo apt-get install --yes --quiet jetty
 sudo update-rc.d jetty disable
+
 
 
 ### DEVELOPMENT TOOLS

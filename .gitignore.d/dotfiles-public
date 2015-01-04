@@ -3,6 +3,7 @@
 /VirtualBox*
 /kniren
 /.ICEauthority
+/.FBReader
 /.NERDTreeBookmarks
 /.Skype
 /.Xauthority
@@ -32,6 +33,7 @@
 /.directory_history
 /.dmenu_cache
 /.dmrc
+/.dockercfg
 /.dotfile_mappings
 /.dropbox-dist
 /.dropbox
@@ -47,7 +49,7 @@
 /.gegl-0.0
 /.gem
 /.ghc
-/.gimp-2.6
+/.gimp-*
 /.gitk
 /.gitignore.d
 /.gksu.lock
@@ -139,6 +141,7 @@
 /.zcompdump.*
 /.zhistory
 /.zhistory-*
+/.zlogin
 /.zprofile
 /.zsh_history
 /.zsh_history-*
