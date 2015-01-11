@@ -1,10 +1,11 @@
 #!/bin/bash -e
 
 
+
 : <<'end_long_comment'
     Sets my system up and running.
     If you want to debug it, and stop if there are any errors, use:
-    
+
         bash -ve [script]
 end_long_comment
 
@@ -44,6 +45,28 @@ else
     exit
 fi
 set -v
+
+
+## CONFIGURATING SWAP (if none found)
+SWAP_COUNT=$(sudo swapon -s | awk '{print $1}' | grep -v "^Filename$" | wc -l)
+if [ $SWAP_COUNT -lt 1 ]; then
+    ## NO SWAP FOUND!
+    read -p "SWAP NOT FOUND! Should configure a file? " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        sudo mkdir -p /mnt/swapfile
+        sudo dd if=/dev/zero of=/mnt/swapfile bs=1G count=4
+        sudo chmod 600 /mnt/swapfile
+        sudo mkswap /mnt/swapfile
+        sudo swapon /mnt/swapfile
+        assure_in_file "/mnt/swapfile none swap sw 0 0" "/etc/fstab"
+
+        $IS_DESKTOP || {
+            sudo sysctl vm.swappiness=10
+            assure_in_file "vm.swappiness=10" "/etc/sysctl.conf"
+        }
+    fi
+fi
 
 
 ## PRE-REQUISITES
