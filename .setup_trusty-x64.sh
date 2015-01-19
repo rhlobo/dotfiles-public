@@ -30,6 +30,13 @@ assure_in_file() {
     [ -f "$FILE" ] || return 0
     sudo grep -Fxq "$STR" "$FILE" || sudo sh -c "echo \"$STR\" >> \"$FILE\""
 }
+env() {
+    VARNAME=$1
+    VARVALUE=$2
+    eval "${VARNAME}=${VARVALUE}"
+    eval "export ${VARNAME}"
+    assure_in_file "${VARNAME}=${VARVALUE}" "/etc/environment"
+}
 
 
 ## CONFIG USED CONFIRMATION
@@ -100,8 +107,9 @@ mkdir -p "${BASE_PATH}/2b-synched/documents"
 mkdir -p "${BASE_PATH}/dev"
 mkdir -p "${BASE_PATH}/app"
 mkdir -p "${BASE_PATH}/Dropbox"
-### SYMLINKING DIRECTORY STRUCTURE
 [ -f "${HOME}/Desktop" ] && mv "${HOME}/Desktop" "${HOME}/desktop"
+mkdir -p "${HOME}/desktop"
+### SYMLINKING DIRECTORY STRUCTURE
 rm -f "${HOME}/app";                    ln -s "${BASE_PATH}/app" "${HOME}/app"
 rm -f "${HOME}/dev";                    ln -s "${BASE_PATH}/dev" "${HOME}/dev"
 rm -f "${HOME}/2b-deleted";             ln -s "${BASE_PATH}/2b-deleted" "${HOME}/2b-deleted"
@@ -236,6 +244,15 @@ sudo add-apt-repository --yes ppa:stefansundin/truecrypt
 sudo apt-get --quiet update
 
 
+## Configuring language
+sudo apt-get install --yes --quiet language-pack-en
+env LANGUAGE en_US.UTF-8
+env LANG en_US.UTF-8
+env LC_ALL en_US.UTF-8
+sudo locale-gen en_US.UTF-8
+sudo dpkg-reconfigure locales
+
+
 ## SOFTWARE
 ### DEVELOPMENT
 #### LATEX
@@ -291,11 +308,11 @@ sudo apt-get install --yes --quiet golang
 #### NODE.JS & NPM
 sudo apt-get install --yes --quiet nodejs
 #### ORACLE JAVA JDK 8
-#- sudo apt-get purge --yes --quiet openjdk*
-#- sudo rm -f /var/lib/dpkg/info/oracle-java8-installer*
-#- sudo apt-get purge --yes --quiet oracle-java8-installer*
-#- sudo apt-get --quiet update
-#- sudo apt-get install --yes --quiet oracle-java8-installer
+sudo apt-get purge --yes --quiet openjdk*
+sudo rm -f /var/lib/dpkg/info/oracle-java8-installer*
+sudo apt-get purge --yes --quiet oracle-java8-installer*
+sudo apt-get --quiet update
+sudo apt-get install --yes --quiet oracle-java8-installer
 #### MAVEN2
 #- sudo apt-get install --yes --quiet maven2
 #### JETTY
@@ -372,6 +389,17 @@ sudo apt-get install --yes --quiet libyaml-dev
 sudo pip install watchdog
 
 ### NETWORK
+#### MOSH
+CURRDIR=$(pwd)
+cd ~/app
+rm -Rf mosh
+git clone https://github.com/keithw/mosh
+cd mosh
+sudo apt-get install --yes --quiet dh-autoreconf
+./autogen.sh
+sudo apt-get install --yes --quiet protobuf-compiler libprotobuf-dev libncurses5-dev zlib1g-dev libutempter-dev libssl-dev
+./configure && make && sudo make install
+cd "${CURRDIR}"
 #### NMAP
 sudo apt-get install --yes --quiet nmap
 
@@ -389,6 +417,10 @@ $IS_X86 && {
 rm -Rf ${HOME}/app/brogue
 ln -s ${HOME}/app/brogue-1.7.4 ${HOME}/app/brogue
 cd "${CURRDIR}"
+#### MIDNIGHT COMMANDER
+sudo apt-get install mc
+#### PV
+sudo apt-get install pv
 #### ZSH
 sudo apt-get install --yes --quiet zsh
 #### OH MY ZSH
@@ -519,6 +551,7 @@ sudo apt-get install --yes --quiet openvpn
 sudo apt-get install --yes --quiet sshuttle
 CURRDIR=$(pwd)
 cd ~/app
+rm -Rf sshuttle
 git clone git://github.com/apenwarr/sshuttle
 cd "${CURRDIR}"
 
@@ -645,17 +678,17 @@ $IS_DESKTOP && {
     #### MELD DIFF VIEWER
     sudo apt-get install --yes --quiet meld
     #### POP CORN (popcorn.cdnjd.com / http://popcorn-time.tv)
-    CURRDIR=$(pwd)
-    rm -Rf ~/app/popcorn
-    mkdir -p ~/app/popcorn
-    cd ~/app/popcorn
-    curl http://time4popcorn.eu/Popcorn-Time-linux64.tar.gz | tar xz
-    sudo apt-get install --yes --quiet libudev1:i386
-    sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
-    cd "${CURRDIR}"
+    #- CURRDIR=$(pwd)
+    #- rm -Rf ~/app/popcorn
+    #- mkdir -p ~/app/popcorn
+    #- cd ~/app/popcorn
+    #- curl http://time4popcorn.eu/Popcorn-Time-linux64.tar.gz | tar xz
+    #- sudo apt-get install --yes --quiet libudev1:i386
+    #- sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
+    #- cd "${CURRDIR}"
     #### RXVT-UNICODE TERMINAL EMULATOR (EXPERIMENTAL)
-    #sudo apt-get install --yes --quiet rxvt-unicode-256color ncurses-term
-    sudo apt-get install --yes --quiet rxvt-unicode
+    sudo apt-get install --yes --quiet rxvt-unicode-256color ncurses-term
+    #sudo apt-get install --yes --quiet rxvt-unicode
     #### REMINDOR - ALARM NOTIFICATIONS
     sudo apt-get install --yes --quiet indicator-remindor
     #### SKYPE

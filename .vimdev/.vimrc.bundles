@@ -121,6 +121,7 @@
             endif
             Bundle 'bling/vim-bufferline'
             Bundle 'Lokaltog/vim-easymotion'
+            Bundle 'dkprice/vim-easygrep'
             Bundle 'godlygeek/csapprox'
             Bundle 'jistr/vim-nerdtree-tabs'
             Bundle 'mbbill/undotree'
@@ -224,6 +225,7 @@
             Bundle 'hail2u/vim-css3-syntax'
             Bundle 'gorodinskiy/vim-coloresque'
             Bundle 'tpope/vim-haml'
+            Bundle 'slim-template/vim-slim'
         endif
     " }
 
