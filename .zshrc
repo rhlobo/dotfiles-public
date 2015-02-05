@@ -129,8 +129,8 @@ bindkey '^r' history-incremental-search-backward
 bindkey "^U" kill-line
 
 # home and end keys
-bindkey $terminfo[khome] vi-beginning-of-line
-bindkey $terminfo[kend] vi-end-of-line
+bindkey $terminfo[khome] vi-beginning-of-line > /dev/null || echo
+bindkey $terminfo[kend] vi-end-of-line > /dev/null || echo
 
 # delete key
 bindkey '^[[3~' delete-char
@@ -141,11 +141,16 @@ function zle-line-init zle-keymap-select {
     # vi mode mode prompt var (NORMAL MODE, INSERT MODE SHOWS NOTHING)
     VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
 
-    BATTERY=$(upower -i `upower -e | grep battery` | grep percentage | awk '{print $2}')
-    BATTERY_PROMPT="%{$fg_bold[white]%} ${BATTERY}%% %{$reset_color%}"
+    which upower &> /dev/null && {
+        BATTERY=$(upower -i `upower -e | grep battery` | grep percentage | awk '{print $2}')
+        BATTERY_PROMPT="%{$fg_bold[white]%} ${BATTERY}%% %{$reset_color%}"
+    }
+    if [[ "$ASCIINEMA_REC" -eq 1 ]]; then
+        ASCIINEMA_PROMPT="%{$fg_bold[red]%} [REC] %{$reset_color%}"
+    fi
 
     # right prompt, showing viMode, host, time, etc
-    RPROMPT='${BATTERY_PROMPT} ${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} %{$fg[blue]%}${HOST} %{$fg_bold[cyan]%}%t%{$reset_color%}'
+    RPROMPT='${BATTERY_PROMPT}${ASCIINEMA_PROMPT} ${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} %{$fg[blue]%}${HOST} %{$fg_bold[cyan]%}%t%{$reset_color%}'
 
     # Redraws prompt
     zle reset-prompt

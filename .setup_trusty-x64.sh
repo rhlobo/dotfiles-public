@@ -30,6 +30,13 @@ assure_in_file() {
     [ -f "$FILE" ] || return 0
     sudo grep -Fxq "$STR" "$FILE" || sudo sh -c "echo \"$STR\" >> \"$FILE\""
 }
+env() {
+    VARNAME=$1
+    VARVALUE=$2
+    eval "${VARNAME}=${VARVALUE}"
+    eval "export ${VARNAME}"
+    assure_in_file "${VARNAME}=${VARVALUE}" "/etc/environment"
+}
 
 
 ## CONFIG USED CONFIRMATION
@@ -54,8 +61,8 @@ if [ $SWAP_COUNT -lt 1 ]; then
     read -p "SWAP NOT FOUND! Should configure a file? " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
-        sudo mkdir -p /mnt/swapfile
-        sudo dd if=/dev/zero of=/mnt/swapfile bs=1G count=4
+        sudo mkdir -p /mnt
+        sudo dd if=/dev/zero of=/mnt/swapfile bs=512M count=8
         sudo chmod 600 /mnt/swapfile
         sudo mkswap /mnt/swapfile
         sudo swapon /mnt/swapfile
@@ -100,8 +107,9 @@ mkdir -p "${BASE_PATH}/2b-synched/documents"
 mkdir -p "${BASE_PATH}/dev"
 mkdir -p "${BASE_PATH}/app"
 mkdir -p "${BASE_PATH}/Dropbox"
-### SYMLINKING DIRECTORY STRUCTURE
 [ -f "${HOME}/Desktop" ] && mv "${HOME}/Desktop" "${HOME}/desktop"
+mkdir -p "${HOME}/desktop"
+### SYMLINKING DIRECTORY STRUCTURE
 rm -f "${HOME}/app";                    ln -s "${BASE_PATH}/app" "${HOME}/app"
 rm -f "${HOME}/dev";                    ln -s "${BASE_PATH}/dev" "${HOME}/dev"
 rm -f "${HOME}/2b-deleted";             ln -s "${BASE_PATH}/2b-deleted" "${HOME}/2b-deleted"
@@ -236,46 +244,54 @@ sudo add-apt-repository --yes ppa:stefansundin/truecrypt
 sudo apt-get --quiet update
 
 
+## Configuring language
+sudo apt-get install --yes --quiet language-pack-en
+env LANGUAGE en_US.UTF-8
+env LANG en_US.UTF-8
+env LC_ALL en_US.UTF-8
+sudo locale-gen en_US.UTF-8
+sudo dpkg-reconfigure locales
+
+
 ## SOFTWARE
 ### DEVELOPMENT
 #### LATEX
-sudo apt-get install --yes --quiet texlive
-#sudo apt-get install --yes --quiet texlive-full
-sudo apt-get install --yes --quiet texlive-lang-english texlive-lang-portuguese
-sudo apt-get install --yes --quiet texlive-science texlive-math-extra
-sudo apt-get install --yes --quiet abiword
+#- sudo apt-get install --yes --quiet texlive
+#- sudo apt-get install --yes --quiet texlive-lang-english texlive-lang-portuguese
+#- sudo apt-get install --yes --quiet texlive-science texlive-math-extra
+#- sudo apt-get install --yes --quiet abiword
 #### PYTHON
 sudo apt-get install --yes --quiet python2.7 python2.7-dev python-setuptools build-essential
 sudo apt-get install --yes --quiet ipython ipython-notebook
 ipython profile create
 #### PYTHON VIRTUALENVWRAPPER
-# sudo apt-get install --yes --quiet python-pip
 sudo apt-get purge --yes python-pip
 cd ~/tmp
-wget -O - https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-sudo python get-pip.py
+wget -O get-pip.py https://raw.github.com/pypa/pip/master/contrib/get-pip.py && sudo python get-pip.py || {
+    sudo apt-get install --yes --quiet python-pip
+}
 cd "${CURRDIR}"
 sudo apt-get install --yes --quiet virtualenvwrapper
 sudo pip install virtualenvwrapper
 #### R
-sudo apt-get install --yes --quiet r-base r-base-dev
+#- sudo apt-get install --yes --quiet r-base r-base-dev
 #### RUBY
 #bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
-[ ! -f ~/.rvm ] && {
-    \curl -L https://get.rvm.io | bash -s stable
-    source ~/.rvm/scripts/rvm
-    rvm requirements
-    rvm install ruby
-    rvm use --default ruby
-    rvm rubygems current
-    gem install rails
-}
+#- [ ! -f ~/.rvm ] && {
+#-     \curl -L https://get.rvm.io | bash -s stable
+#-     source ~/.rvm/scripts/rvm
+#-     rvm requirements
+#-     rvm install ruby
+#-     rvm use --default ruby
+#-     rvm rubygems current
+#-     gem install rails
+#- }
 #### NVM
-git clone https://github.com/creationix/nvm.git ~/.nvm && {
-    source ~/.nvm/nvm.sh
-    nvm install 0.10
-    nvm use 0.10 --default
-}
+#- git clone https://github.com/creationix/nvm.git ~/.nvm && {
+#-     source ~/.nvm/nvm.sh
+#-     nvm install 0.10
+#-     nvm use 0.10 --default
+#- }
 #### GO LANG
 #sudo apt-get install --yes --quiet bison
 #bash < <(curl -s https://raw.github.com/moovweb/gvm/master/binscripts/gvm-installer)
@@ -298,10 +314,10 @@ sudo apt-get purge --yes --quiet oracle-java8-installer*
 sudo apt-get --quiet update
 sudo apt-get install --yes --quiet oracle-java8-installer
 #### MAVEN2
-sudo apt-get install --yes --quiet maven2
+#- sudo apt-get install --yes --quiet maven2
 #### JETTY
-sudo apt-get install --yes --quiet jetty
-sudo update-rc.d jetty disable
+#- sudo apt-get install --yes --quiet jetty
+#- sudo update-rc.d jetty disable
 
 
 
@@ -338,23 +354,23 @@ sudo apt-get install --yes --quiet googlecl
 sudo easy_install http://closure-linter.googlecode.com/files/closure_linter-latest.tar.gz
 #### JQ
 #http://stedolan.github.io/jq/download/linux64/jq
-CURRDIR=$(pwd) && cd "${HOME}/tmp" && curl http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz | tar xz
-cd jq-1.3
+CURRDIR=$(pwd) && cd "${HOME}/tmp" && curl http://stedolan.github.io/jq/download/source/jq-1.4.tar.gz | tar xz
+cd jq-1.4
 ./configure && make && sudo make install
 cd "${CURRDIR}"
 #### NGROK - Expose localhost securely to the world
-CURRDIR=$(pwd)
-cd ~/app
-wget -O ngrok.zip https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?os=linux&arch=386&channel=stable
-unzip ngrok.zip
-rm ngrok.zip
-cd "${CURRDIR}"
+#- CURRDIR=$(pwd)
+#- cd ~/app
+#- wget -O ngrok.zip https://api.equinox.io/1/Applications/ap_pJSFC5wQYkAyI0FIVwKYs9h1hW/Updates/Asset/ngrok.zip?os=linux&arch=386&channel=stable
+#- unzip ngrok.zip
+#- rm -Rf ngrok.zip
+#- cd "${CURRDIR}"
 #### SYNTAX COLORING
 sudo apt-get install --yes --quiet source-highlight
 #### VIRTUALBOX
-sudo apt-get install --yes --quiet virtualbox
+#- sudo apt-get install --yes --quiet virtualbox
 #### VAGRANT
-sudo apt-get install --yes --quiet vagrant
+#- sudo apt-get install --yes --quiet vagrant
 
 
 ### PYTHON MISC
@@ -373,6 +389,17 @@ sudo apt-get install --yes --quiet libyaml-dev
 sudo pip install watchdog
 
 ### NETWORK
+#### MOSH
+CURRDIR=$(pwd)
+cd ~/app
+rm -Rf mosh
+git clone https://github.com/keithw/mosh
+cd mosh
+sudo apt-get install --yes --quiet dh-autoreconf
+./autogen.sh
+sudo apt-get install --yes --quiet protobuf-compiler libprotobuf-dev libncurses5-dev zlib1g-dev libutempter-dev libssl-dev
+./configure && make && sudo make install
+cd "${CURRDIR}"
 #### NMAP
 sudo apt-get install --yes --quiet nmap
 
@@ -390,6 +417,10 @@ $IS_X86 && {
 rm -Rf ${HOME}/app/brogue
 ln -s ${HOME}/app/brogue-1.7.4 ${HOME}/app/brogue
 cd "${CURRDIR}"
+#### MIDNIGHT COMMANDER
+sudo apt-get install mc
+#### PV
+sudo apt-get install pv
 #### ZSH
 sudo apt-get install --yes --quiet zsh
 #### OH MY ZSH
@@ -449,26 +480,27 @@ cd ~/.vimdev/.vim/bundle/YouCompleteMe || cd ~/.vim/bundle/YouCompleteMe
 bash ./install.sh --clang-completer
 #bash ./install.sh --clang-completer --omnisharp-completer
 cd "${CURRDIR}"
-sudo apt-get install --yes --quiet cabal-install
-cabal update
-cabal install hdevtools
-sudo apt-get install --yes --quiet happy
-cabal install ghc-mod
+###### CABAL, HDEVTOOLS & GHC-MOD (FOR HASKELL SUPPORT)
+#- sudo apt-get install --yes --quiet cabal-install
+#- cabal update
+#- cabal install hdevtools
+#- sudo apt-get install --yes --quiet happy
+#- cabal install ghc-mod
 ###### VIMPROC (FOR HASKELL SUPPORT)
-CURRDIR=$(pwd)
-mkdir -p ~/dev/lib-misc
-cd ~/dev/lib-misc
-rm -Rf vimproc.vim
-git clone https://github.com/Shougo/vimproc.vim.git
-cd vimproc.vim
-make -f make_unix.mak
-mkdir -p ~/.vim/bundle/vimproc/autoload
-mkdir -p ~/.vim/bundle/vimproc/plugin
-cp -r autoload/* ~/.vim/bundle/vimproc/autoload
-cp -r plugin/* ~/.vim/bundle/vimproc/plugin
-cd ~/.vim/bundle/vimproc/
-make -f make_unix.mak
-cd "${CURRDIR}"
+#- CURRDIR=$(pwd)
+#- mkdir -p ~/dev/lib-misc
+#- cd ~/dev/lib-misc
+#- rm -Rf vimproc.vim
+#- git clone https://github.com/Shougo/vimproc.vim.git
+#- cd vimproc.vim
+#- make -f make_unix.mak
+#- mkdir -p ~/.vim/bundle/vimproc/autoload
+#- mkdir -p ~/.vim/bundle/vimproc/plugin
+#- cp -r autoload/* ~/.vim/bundle/vimproc/autoload
+#- cp -r plugin/* ~/.vim/bundle/vimproc/plugin
+#- cd ~/.vim/bundle/vimproc/
+#- make -f make_unix.mak
+#- cd "${CURRDIR}"
 #### ACK GREP - a tool like grep, optimized for programmers
 sudo apt-get install --yes --quiet ack-grep
 #### SYSTEM MONITORATION
@@ -477,10 +509,8 @@ sudo apt-get install --yes --quiet htop
 sudo apt-get install --yes --quiet tree
 
 ### COMMON SYSTEM UTILITIES
-#### ARCHIVE MANAGEMENT TOOLS
-sudo apt-get install --yes --quiet unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller
 #### BITTORRENT SYNC
-sudo apt-get --yes --quiet install btsync
+#- sudo apt-get --yes --quiet install btsync
 #### DROPBOX
 CURRDIR=$(pwd)
 cd ~
@@ -521,6 +551,7 @@ sudo apt-get install --yes --quiet openvpn
 sudo apt-get install --yes --quiet sshuttle
 CURRDIR=$(pwd)
 cd ~/app
+rm -Rf sshuttle
 git clone git://github.com/apenwarr/sshuttle
 cd "${CURRDIR}"
 
@@ -533,6 +564,8 @@ $IS_DESKTOP && {
     ### DESKTOP SYSTEM UTILITIES
     #### ACPI
     sudo apt-get install --yes --quiet acpi
+    #### ARCHIVE MANAGEMENT TOOLS
+    sudo apt-get install --yes --quiet unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack arj cabextract file-roller
     #### COMMON CODECS
     sudo apt-get install --yes --quiet non-free-codecs || echo "Failed to install 'non-free-codecs'"
     sudo apt-get install --yes --quiet libxine1-ffmpeg || echo "Failed to install 'libxine1-ffmpeg'"
@@ -645,17 +678,17 @@ $IS_DESKTOP && {
     #### MELD DIFF VIEWER
     sudo apt-get install --yes --quiet meld
     #### POP CORN (popcorn.cdnjd.com / http://popcorn-time.tv)
-    CURRDIR=$(pwd)
-    rm -Rf ~/app/popcorn
-    mkdir -p ~/app/popcorn
-    cd ~/app/popcorn
-    curl http://time4popcorn.eu/Popcorn-Time-linux64.tar.gz | tar xz
-    sudo apt-get install --yes --quiet libudev1:i386
-    sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
-    cd "${CURRDIR}"
+    #- CURRDIR=$(pwd)
+    #- rm -Rf ~/app/popcorn
+    #- mkdir -p ~/app/popcorn
+    #- cd ~/app/popcorn
+    #- curl http://time4popcorn.eu/Popcorn-Time-linux64.tar.gz | tar xz
+    #- sudo apt-get install --yes --quiet libudev1:i386
+    #- sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0
+    #- cd "${CURRDIR}"
     #### RXVT-UNICODE TERMINAL EMULATOR (EXPERIMENTAL)
-    #sudo apt-get install --yes --quiet rxvt-unicode-256color ncurses-term
-    sudo apt-get install --yes --quiet rxvt-unicode
+    sudo apt-get install --yes --quiet rxvt-unicode-256color ncurses-term
+    #sudo apt-get install --yes --quiet rxvt-unicode
     #### REMINDOR - ALARM NOTIFICATIONS
     sudo apt-get install --yes --quiet indicator-remindor
     #### SKYPE
@@ -690,7 +723,7 @@ $IS_DESKTOP && {
     } || {
         sudo apt-get install --yes --quiet libghc-xmonad-contrib-dev
     }
-    
+
     mkdir -p ~/.xmonad
     touch ~/.xmonad/xmonad.hs
     #### FEH (background image)
@@ -701,7 +734,7 @@ $IS_DESKTOP && {
         sudo apt-get install --yes --quiet transset
     } || {
         sudo apt-get install --yes --quiet x11-apps
-    } 
+    }
     #### MINIMALISTIC PDF VIEWER
     sudo apt-get install --yes --quiet zathura
     #### COREUTILS (DIRCOLORS)
@@ -710,6 +743,9 @@ $IS_DESKTOP && {
     sudo apt-get install --yes --quiet dzen2
     #### CONKY
     sudo apt-get install --yes --quiet conky
+
+
+    gsettings set com.canonical.Unity.Lenses disabled-scopes "['more_suggestions-amazon.scope', 'more_suggestions-u1ms.scope', 'more_suggestions-populartracks.scope', 'music-musicstore.scope', 'more_suggestions-ebay.scope', 'more_suggestions-ubuntushop.scope', 'more_suggestions-skimlinks.scope']"
 }
 
 
@@ -723,8 +759,6 @@ sudo rm -fR "${HOME}/tmp"
 sudo chmod 600 -R "${HOME}/.ssh"
 sudo chmod 700 "${HOME}/.ssh"
 
-
-gsettings set com.canonical.Unity.Lenses disabled-scopes "['more_suggestions-amazon.scope', 'more_suggestions-u1ms.scope', 'more_suggestions-populartracks.scope', 'music-musicstore.scope', 'more_suggestions-ebay.scope', 'more_suggestions-ubuntushop.scope', 'more_suggestions-skimlinks.scope']"
 
 exit 0
 
